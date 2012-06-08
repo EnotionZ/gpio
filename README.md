@@ -2,6 +2,7 @@ GpiO
 ====
 Talk to your Raspberry Pi's GPIO
 
+demo: http://www.youtube.com/watch?v=2Juo-CJ6eu4
 
 ###Installation (Get node.js on your Raspberry Pi)
 1. Install packages:
