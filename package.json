@@ -1,0 +1,7 @@
+{
+	"name": "GpiO",
+	"description": "Talk to your Raspberry PI",
+	"version": "0.0.1",
+	"main": "gpio"
+}
+
