@@ -52,7 +52,8 @@ gpio4.reset();    // sets pin to low
 gpio4.unexport(); // all done
 ```
 
-**Flashing Lights (with LED connected to GPIO22)**
+### Example
+Flashing Lights (with LED connected to GPIO22)
 ```js
 // errrrr, this is only to show it could be done easily, don't do this foreal
 var gpio22 = require("./GpiO").export(22);
