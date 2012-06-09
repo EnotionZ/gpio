@@ -49,6 +49,10 @@ make install
 var gpio = require("./GpiO");
 var gpio4 = gpio.export(4);
 gpio4.set();      // sets pin to high
+gpio4.get(function(err, val) {
+   if(err) throw err;  // throw your error
+   // val should be 1, do something here...
+});
 gpio4.reset();    // sets pin to low
 gpio4.unexport(); // all done
 ```
