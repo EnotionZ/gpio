@@ -16,14 +16,15 @@ var GPIO = function(number, dir) {
 }
 
 GPIO.prototype._write = function(str, file, fn) {
-	if(typeof fn === "undefined") fn = puts;
+	if(typeof fn !== "function") fn = puts;
 	fs.writeFile(gpiopath + file, str, fn);
 };
 
 GPIO.prototype._read = function(file, fn) {
 	fs.readFile(gpiopath + file, "utf-8", fn || function(err, data) {
 		if(err) throw err;
-		util.puts(data);
+		if(typeof fn === "function") fn(data);
+		else util.puts("value: ", data);
 	});
 }; 
 
