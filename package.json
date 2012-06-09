@@ -1,6 +1,7 @@
 {
 	"name": "GpiO",
-	"description": "Talk to your Raspberry PI",
+	"author": "Dominick Pham <dominick@dph.am>",
+	"description": "Talk to your Raspberry PI's general purpose inputs and outputs",
 	"version": "0.0.1",
 	"main": "gpio"
 }
