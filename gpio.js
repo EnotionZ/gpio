@@ -1,18 +1,9 @@
+var fs = require("fs");
 var util = require("util");
 var exec = require("child_process").exec;
 var gpiopath = '/sys/class/gpio/';
 
-var puts = function(err, stdout, stderr) { 
-	if(stdout) {
-		util.puts("stdout: ", stdout);
-		return true;
-	} else if(err) {
-		util.puts("error: ", err);
-	} else if(stderr) {
-		util.puts("stderr: ", stderr);
-	}
-	return false;
-};
+var puts = function(err) { if(err) util.puts("error: ", err); };
 
 
 
@@ -25,7 +16,7 @@ var GPIO = function(number) {
 
 GPIO.prototype._write = function(str, cmd, fn) {
 	if(typeof fn === "undefined") fn = puts;
-	exec('echo "' + str + '" > ' + gpiopath + cmd, fn);
+	fs.writeFile(gpiopath + cmd, str, fn);
 };
 
 GPIO.prototype.export = function() { this._write(this.number, 'export'); };
