@@ -1,6 +1,5 @@
 var fs = require("fs");
 var util = require("util");
-var exec = require("child_process").exec;
 var gpiopath = '/sys/class/gpio/';
 
 var puts = function(err) { if(err) util.puts("error: ", err); };
@@ -11,9 +10,12 @@ var _write = function(str, file, fn) {
 };
 var _read = function(file, fn) {
 	fs.readFile(file, "utf-8", function(err, data) {
-		if(err) throw err;
-		if(typeof fn === "function") fn(data);
-		else util.puts("value: ", data);
+		if(err) {
+			puts(err);
+		} else {
+			if(typeof fn === "function") fn(data);
+			else util.puts("value: ", data);
+		}
 	});
 }; 
 
