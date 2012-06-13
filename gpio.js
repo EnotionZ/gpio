@@ -30,6 +30,8 @@ var _export = function(n) {
 var GPIO = function(number, dir) {
 	var self = this;
 
+	this.fnStack = {};
+
 	this.number = number;
 	this.value = 0;
 
@@ -45,7 +47,10 @@ var GPIO = function(number, dir) {
 	this._get();
 
 	// Watch changes to value
-	fs.watchFile(this.PATH.VALUE, function(curr, prev) { self._get(); });
+	fs.watchFile(this.PATH.VALUE, function(curr, prev) {
+		// gets value and triggers "valueChange" event
+		self._get(function(val){ this.trigger("valueChange", val); });
+	});
 };
 
 
@@ -54,6 +59,34 @@ var GPIO = function(number, dir) {
  */
 GPIO.prototype.export = function() { _export(this.number); };
 GPIO.prototype.unexport = function() { fs.unwatchFile(this.PATH.VALUE); _unexport(this.number); };
+
+/**
+ * Bind trigger
+ */
+GPIO.prototype.trigger = function(type) {
+	var fns = this.fnStack[type];
+	var args = Array.prototype.slice.call(arguments, 1, arguments.length);
+	if(typeof fns !== "undefined") {
+		for(var i=0, len=fns.length; i<len; i++) fns[i].apply(this, args);
+	}
+};
+GPIO.prototype.on = function(type, fn) {
+	if(typeof this.fnStack[type] === "undefined") this.fnStack[type] = [];
+	this.fnStack.push(fn);
+};
+GPIO.prototype.off = function(type, fn) {
+	if(typeof fn !== "function") {
+		delete this.fnStack[type];
+	} else {
+		var fns = this.fnStack[type];
+		for(var i=0, len=fns.length; i<len; i++) {
+			if(fns[i] === fn) {
+				fns.splice(i,1);
+				return;
+			}
+		}
+	}
+};
 
 /**
  * Sets direction, default is "out"
@@ -67,9 +100,12 @@ GPIO.prototype.setDirection = function(dir) {
 /**
  * Internal getter, stores value
  */
-GPIO.prototype._get = function() {
+GPIO.prototype._get = function(fn) {
 	var self = this;
-	_read(this.PATH.VALUE, function(val) { self.value = parseInt(val, 10); });
+	_read(this.PATH.VALUE, function(val) {
+		self.value = parseInt(val, 10);
+		if(typeof fn === "function") fn.call(this, val);
+	});
 };
 
 /**
