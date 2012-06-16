@@ -41,7 +41,7 @@ var GPIO = function(number, dir) {
 	this.PATH.DIRECTION = this.PATH.PIN + 'direction';
 
 	this.export();
-	this.setDirection(dir);
+	this.setDirection(dir || "out");
 
 	// Sets initial value
 	this._get();
@@ -49,7 +49,7 @@ var GPIO = function(number, dir) {
 	// Watch changes to value
 	fs.watchFile(this.PATH.VALUE, function(curr, prev) {
 		// gets value and triggers "valueChange" event
-		self._get(function(val){ this.trigger("valueChange", val); });
+		self._get(function(val){ self.trigger("valueChange", val); });
 	});
 };
 
@@ -72,7 +72,7 @@ GPIO.prototype.trigger = function(type) {
 };
 GPIO.prototype.on = function(type, fn) {
 	if(typeof this.fnStack[type] === "undefined") this.fnStack[type] = [];
-	this.fnStack.push(fn);
+	this.fnStack[type].push(fn);
 };
 GPIO.prototype.off = function(type, fn) {
 	if(typeof fn !== "function") {
@@ -104,7 +104,7 @@ GPIO.prototype._get = function(fn) {
 	var self = this;
 	_read(this.PATH.VALUE, function(val) {
 		self.value = parseInt(val, 10);
-		if(typeof fn === "function") fn.call(this, val);
+		if(typeof fn === "function") fn.call(this, self.value);
 	});
 };
 
