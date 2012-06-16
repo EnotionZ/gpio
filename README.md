@@ -105,7 +105,6 @@ all': {
 
 7. Install!!
 ```bash
-sudo su
 make
-make install
+sudo make install
 ```
