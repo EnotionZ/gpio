@@ -1,4 +1,4 @@
-GpiO
+gpio
 ====
 Talk to your Raspberry Pi's GPIO
 
@@ -6,11 +6,16 @@ demo: http://www.youtube.com/watch?v=2Juo-CJ6eu4
 
 ## Usage
 
+This library is an npm package, just define "gpio" in your package.json dependencies or
+```js
+npm install gpio
+```
+
 ##### Pin direction "out"
 When you export a pin, the default direction is out. This allows you to set the pin 
 value to either LOW or HIGH (3.3V) from your program.
 ```js
-var gpio = require("./GpiO");
+var gpio = require("gpio");
 var gpio4 = gpio.export(4);  // returns a gpio pin instance and exports that pin
 
 gpio4.set();                 // sets pin to high
@@ -27,7 +32,7 @@ You can set the pin direction so that the pin value can be set externally, then
 read pin value from your program. This library comes with an observer pattern which
 allows you to watch for value changes and fire a callback.
 ```js
-var gpio = require("./GpiO");
+var gpio = require("gpio");
 var gpio4 = gpio.export(4, "in");  // creates pin instance with direction "in"
 
 // bind to the "valueChange" event
@@ -54,7 +59,7 @@ gpio17.setDirection("out");
 ## Example
 ##### Flashing Lights (with LED connected to GPIO22)
 ```js
-var gpio = require("./GpiO");
+var gpio = require("gpio");
 var gpio22 = gpio.export(22);
 setInterval(function() {
    gpio22.set();
