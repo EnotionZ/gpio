@@ -35,6 +35,16 @@ gpio4.on("valueChange", function(value) {
    // value will report either 1 or 0 (number) when the value changes
 });
 
+// bind multiple events
+var processPin4 = function(val) { console.log(val); };
+gpio4.on("valueChange", processPin4);
+
+// unbind a particular callback from the "valueChange" event
+gpio4.off("valueChange", processPin4);
+
+// unbind all callbacks from the "valueChange" event
+gpio4.off("valueChange");
+
 // you can also manually change the direction anytime after instantiation
 var gpio17 = gpio.export(17);
 gpio17.setDirection("in");
@@ -95,7 +105,6 @@ all': {
 
 7. Install!!
 ```bash
-sudo su
 make
-make install
+sudo make install
 ```
