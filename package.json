@@ -1,8 +1,10 @@
 {
-	"name": "GpiO",
-	"author": "Dominick Pham <dominick@dph.am>",
+	"name": "gpio",
+	"author": "Dominick Pham <dominick@dph.am> (http://dph.am)",
 	"description": "Talk to your Raspberry PI's general purpose inputs and outputs",
-	"version": "0.0.1",
-	"main": "gpio"
+	"keywords": ["gpio", "raspberry", "pi"],
+	"version": "0.1.0",
+	"main": "gpio",
+	"repository": "git://github.com/EnotionZ/GpiO.git"
 }
 
