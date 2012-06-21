@@ -41,10 +41,13 @@ var GPIO = function(number, dir) {
 	this.PATH.DIRECTION = this.PATH.PIN + 'direction';
 
 	this.export();
-	this.setDirection(dir || "out");
+
+	// Needs to stall some time after exporting before we can set
+	// direction and grab value or else we get an error
+	setTimeout(function() { self.setDirection(dir || "out"); }, 10);
 
 	// Sets initial value
-	this._get();
+	setTimeout(function() { self._get(); }, 12);
 
 	// Watch changes to value
 	fs.watchFile(this.PATH.VALUE, function(curr, prev) {
