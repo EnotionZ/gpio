@@ -2,8 +2,8 @@ gpio
 ====
 Talk to your Raspberry Pi's GPIO
 
-demo using LED: http://www.youtube.com/watch?v=2Juo-CJ6eu4
-demo using RC car: http://www.youtube.com/watch?v=klQdX8-YVaI
+* demo using LED: http://www.youtube.com/watch?v=2Juo-CJ6eu4
+* demo using RC car: http://www.youtube.com/watch?v=klQdX8-YVaI
 
 ## Usage
 
