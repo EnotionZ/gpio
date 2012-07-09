@@ -75,6 +75,9 @@ gpio22.on("valueChange", function(val) {
 });
 ```
 
+##### Controlling an RC car
+Source code here: https://github.com/EnotionZ/node-rc
+
 
 ##Installation (Get node.js on your Raspberry Pi)
 1. Install packages:
