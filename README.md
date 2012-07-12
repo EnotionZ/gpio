@@ -5,6 +5,9 @@ Talk to your Raspberry Pi's GPIO
 * demo using LED: http://www.youtube.com/watch?v=2Juo-CJ6eu4
 * demo using RC car: http://www.youtube.com/watch?v=klQdX8-YVaI
 
+##Installation
+Get node.js on your Raspberry Pi - https://github.com/gflarity/node_pi
+
 ## Usage
 
 This library is an npm package, just define "gpio" in your package.json dependencies or
@@ -78,42 +81,3 @@ gpio22.on("valueChange", function(val) {
 ##### Controlling an RC car
 Source code here: https://github.com/EnotionZ/node-rc
 
-
-##Installation (Get node.js on your Raspberry Pi)
-1. Install packages:
-```bash
-sudo apt-get install git-core build-essential libssl-dev
-```
-
-2. Grab node source
-```bash
-git clone https://github.com/joyent/node.git
-git checkout v0.6.18-release (or current stable)
-```
-
-3. Use armv6 architecture to compile
-```bash
-export CCFLAGS='-march=armv6'
-export CXXFLAGS='-march=armv6'
-```
-
-4. Edit deps/v8/SConstruct, line 82
-```bash
-all': {
-   'CCFLAGS':      ['$DIALECTFLAGS', '$WARNINGFLAGS', '-march=armv6'],
-   'CXXFLAGS':     ['-fno-rtti', '-fno-exceptions', '-march=armv6'],
- },
-```
-
-5. Edit same file, line 157, remove *'vfp3:on'* and *'simulator:none'
-
-6. configure the build
-```bash
-./configure  --openssl-libpath=/usr/lib/ssl
-```
-
-7. Install!!
-```bash
-make
-sudo make install
-```
