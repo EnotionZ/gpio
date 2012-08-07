@@ -1,5 +1,6 @@
 var fs = require("fs");
 var util = require("util");
+var EventEmitter = require('events').EventEmitter;
 var gpiopath = '/sys/class/gpio/';
 
 var puts = function(err) { if(err) util.puts("error: ", err); };
@@ -30,8 +31,6 @@ var _export = function(n) {
 var GPIO = function(number, dir) {
 	var self = this;
 
-	this.fnStack = {};
-
 	this.number = number;
 	this.value = 0;
 
@@ -51,9 +50,11 @@ var GPIO = function(number, dir) {
 	// Watch changes to value
 	fs.watchFile(this.PATH.VALUE, function(curr, prev) {
 		// gets value and triggers "valueChange" event
-		self._get(function(val){ self.trigger("valueChange", val); });
+		self._get(function(val){ self.emit("valueChange", val); });
 	});
 };
+
+util.inherits(GPIO, EventEmitter);
 
 
 /**
@@ -62,33 +63,6 @@ var GPIO = function(number, dir) {
 GPIO.prototype.export = function() { _export(this.number); };
 GPIO.prototype.unexport = function() { fs.unwatchFile(this.PATH.VALUE); _unexport(this.number); };
 
-/**
- * Bind trigger
- */
-GPIO.prototype.trigger = function(type) {
-	var fns = this.fnStack[type];
-	var args = Array.prototype.slice.call(arguments, 1, arguments.length);
-	if(typeof fns !== "undefined") {
-		for(var i=0, len=fns.length; i<len; i++) fns[i].apply(this, args);
-	}
-};
-GPIO.prototype.on = function(type, fn) {
-	if(typeof this.fnStack[type] === "undefined") this.fnStack[type] = [];
-	this.fnStack[type].push(fn);
-};
-GPIO.prototype.off = function(type, fn) {
-	if(typeof fn !== "function") {
-		delete this.fnStack[type];
-	} else {
-		var fns = this.fnStack[type];
-		for(var i=0, len=fns.length; i<len; i++) {
-			if(fns[i] === fn) {
-				fns.splice(i,1);
-				return;
-			}
-		}
-	}
-};
 
 /**
  * Sets direction, default is "out"
