@@ -1,18 +1,30 @@
-var fs = require("fs");
-var util = require("util");
+var fs = require('fs');
+var util = require('util');
+var path = require('path');
 var EventEmitter = require('events').EventEmitter;
+
 var gpiopath = '/sys/class/gpio/';
 
-var puts = function(err) { if(err) util.puts("error: ", err); };
+var logError = function(e) { if(e) console.log(e.code, e.action, e.path); };
 
-var _write = function(str, file, fn) {
-	if(typeof fn !== "function") fn = puts;
-	fs.writeFile(file, str, fn);
+var _write = function(str, file, fn, override) {
+	if(typeof fn !== "function") fn = logError;
+	fs.writeFile(file, str, function(err) {
+		if(err && !override) {
+			err.path = file;
+			err.action = 'write';
+			logError(err);
+		} else {
+			if(typeof fn === "function") fn();
+		}
+	});
 };
 var _read = function(file, fn) {
 	fs.readFile(file, "utf-8", function(err, data) {
 		if(err) {
-			puts(err);
+			err.path = file;
+			err.action = 'read';
+			logError(err);
 		} else {
 			if(typeof fn === "function") fn(data);
 			else util.puts("value: ", data);
@@ -20,37 +32,57 @@ var _read = function(file, fn) {
 	});
 }; 
 
-var _unexport = function(number) { _write(number, gpiopath + 'unexport'); };
-var _export = function(n) {
-	_write(n, gpiopath + 'export', function(err) {
-		if(err) util.puts("error: ", err, "port possibly already exported");
-	});
+var _unexport = function(number, fn) {
+	_write(number, gpiopath + 'unexport', function(err) {
+		if(err) return logError(err);
+		if(typeof fn === 'function') fn();
+	}, 1);
+};
+var _export = function(n, fn) {
+	if(path.exists(gpiopath + 'gpio'+n)) {
+		// already exported, unexport and export again
+		util.puts('Header already exported');
+		_unexport(n, function() { _export(n, fn); });
+	} else {
+		util.puts('Exporting gpio' + n);
+		_write(n, gpiopath + 'export', function(err) {
+			// if there's an error when exporting, unexport and repeat
+			if(err) _unexport(n, function() { _export(n, fn); });
+			else if(typeof fn === 'function') fn();
+		}, 1);
+	}
 };
 
 
-var GPIO = function(number, dir) {
-	var self = this;
+var GPIO = function(headerNum, opts) {
+	opts = opts || {};
 
-	this.number = number;
+	var self = this;
+	var dir = opts.direction;
+
+	this.headerNum = headerNum;
 	this.value = 0;
 
 	this.PATH = {};
-	this.PATH.PIN =       gpiopath + 'gpio' + number + '/';
+	this.PATH.PIN =       gpiopath + 'gpio' + headerNum + '/';
 	this.PATH.VALUE =     this.PATH.PIN + 'value';
 	this.PATH.DIRECTION = this.PATH.PIN + 'direction';
 
-	this.export();
+	this.export(function() {
+		self.setDirection(dir);
 
-	setTimeout(function() { self.setDirection(dir || "out"); }, 10);
+		if(typeof opts.ready === 'function') opts.ready.call(this);
 
-	// Needs to stall some time after exporting before we can
-	// grab value or else we get an error
-	setTimeout(function() { self._get(); }, 12);
-
-	// Watch changes to value
-	fs.watchFile(this.PATH.VALUE, function(curr, prev) {
-		// gets value and triggers "valueChange" event
-		self._get(function(val){ self.emit("valueChange", val); });
+		// Watch changes to value only for 'in' direction since we manually trigger it
+		// for 'out' direction when we set the value
+		fs.watchFile(self.PATH.VALUE, function(curr, prev) {
+			if(self.direction === 'in') {
+				self._get(function(val){
+					self.emit("valueChange", val);
+					self.emit("change", val);
+				});
+			}
+		});
 	});
 };
 
@@ -58,29 +90,46 @@ util.inherits(GPIO, EventEmitter);
 
 
 /**
- * Export and unexport gpio#
+ * Export and unexport gpio#, takes callback which fires when operation is completed
  */
-GPIO.prototype.export = function() { _export(this.number); };
-GPIO.prototype.unexport = function() { fs.unwatchFile(this.PATH.VALUE); _unexport(this.number); };
+GPIO.prototype.export = function(fn) { _export(this.headerNum, fn); };
+GPIO.prototype.unexport = function(fn) { fs.unwatchFile(this.PATH.VALUE); _unexport(this.headerNum, fn); };
 
 
 /**
  * Sets direction, default is "out"
  */
 GPIO.prototype.setDirection = function(dir) {
-	if(typeof dir!== "string" || dir !== "in") dir = "out";
-	_write(dir, this.PATH.DIRECTION);
+	var self = this, path = this.PATH.DIRECTION;
+	if(typeof dir !== "string" || dir !== "in") dir = "out";
 	this.direction = dir;
+
+	util.puts('Setting direction "' + dir + '" on gpio' + this.headerNum);
+	_read(path, function(currDir) {
+		if(dir === currDir) {
+			util.puts('Current direction is already ' + dir);
+		} else {
+			_write(dir, path, function() {
+				self.emit('directionChange', dir);
+			}, 1);
+		}
+	});
 };
 
 /**
  * Internal getter, stores value
  */
 GPIO.prototype._get = function(fn) {
-	var self = this;
+	var self = this, currVal = this.value;
+
+	if(this.direction === 'out') return currVal;
+
 	_read(this.PATH.VALUE, function(val) {
-		self.value = parseInt(val, 10);
-		if(typeof fn === "function") fn.call(this, self.value);
+		val = parseInt(val, 10);
+		if(val !== currVal) {
+			self.value = val;
+			if(typeof fn === "function") fn.call(this, self.value);
+		}
 	});
 };
 
@@ -88,12 +137,24 @@ GPIO.prototype._get = function(fn) {
  * Sets the value. If v is specified as 0 or '0', reset will be called
  */
 GPIO.prototype.set = function(v) {
+	var self = this;
 	if(typeof v !== "number" || v !== 0) v = 1;
-	_write(v, this.PATH.VALUE);
+
+	// if direction is out, just emit change event since we can reliably predict
+	// if the value has changed; we don't have to rely on watching a file
+	if(this.direction === 'out') {
+		if(this.value !== v) {
+			_write(v, this.PATH.VALUE, function() {
+				self.value = v;
+				self.emit('valueChange', v);
+				self.emit('change', v);
+			});
+		}
+	}
 };
 GPIO.prototype.reset = function() { this.set(0); };
 
 
-exports.export = function(number, direction) { return new GPIO(number, direction); };
+exports.export = function(headerNum, direction) { return new GPIO(headerNum, direction); };
 exports.unexport = _unexport;
 
