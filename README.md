@@ -15,68 +15,110 @@ This library is an npm package, just define "gpio" in your package.json dependen
 npm install gpio
 ```
 
-##### Pin direction "out"
-When you export a pin, the default direction is out. This allows you to set the pin 
-value to either LOW or HIGH (3.3V) from your program.
+##### Standard usage
+
 ```js
 var gpio = require("gpio");
-var gpio4 = gpio.export(4);  // returns a gpio pin instance and exports that pin
 
-gpio4.set();                 // sets pin to high
-console.log(gpio4.value);    // should log 1
-
-gpio4.set(0);                // sets pin to low (can also call gpio4.reset()
-console.log(gpio4.value);    // should log 0
-
-gpio4.unexport();            // all done
+// Calling export with a pin number will export that header and return a gpio header instance
+var gpio4 = gpio.export(4, {
+   // When you export a pin, the default direction is out. This allows you to set
+   // the pin value to either LOW or HIGH (3.3V) from your program.
+   direction: 'out',
+   
+   // Due to the asynchronous nature of exporting a header, you may not be able to
+   // read or write to the header right away. Place your logic in this ready
+   // function to guarantee everything will get fired properly
+   ready: function() {
+      gpio4.set();                 // sets pin to high
+      console.log(gpio4.value);    // should log 1
+      
+      gpio4.set(0);                // sets pin to low (can also call gpio4.reset()
+      console.log(gpio4.value);    // should log 0
+      
+      gpio4.unexport();            // all done
+   }
+});
 ```
 
-##### Pin direction "in" and event binding
-You can set the pin direction so that the pin value can be set externally, then 
-read pin value from your program. This library comes with an observer pattern which
-allows you to watch for value changes and fire a callback.
+##### Header direction "in" and event binding
+If you plan to set the header voltage externally, use direction 'in' and read value from your program.
+This library uses node's EventEmitter (http://nodejs.org/api/events.html) which allows you to watch
+for value changes and fire a callback. Event bindings also work when direction is 'out'.
 ```js
 var gpio = require("gpio");
-var gpio4 = gpio.export(4, "in");  // creates pin instance with direction "in"
 
-// bind to the "valueChange" event
-gpio4.on("valueChange", function(value) {
-   // value will report either 1 or 0 (number) when the value changes
+// creates pin instance with direction "in"
+var gpio4 = gpio.export(4, {
+   direction: "in",
+   ready: function() {
+            
+      // bind to the "change" event
+      // see nodejs's EventEmitter 
+      gpio4.on("change", function(val) {
+         // value will report either 1 or 0 (number) when the value changes
+         console.log(val)
+      });
+      
+      // you can bind multiple events
+      var processPin4 = function(val) { console.log(val); };
+      gpio4.on("change", processPin4);
+            
+      // unbind a particular callback from the "change" event
+      gpio4.removeListener("change", processPin4);
+      
+      // unbind all callbacks from the "change" event
+      gpio4.removeAllListeners("change");
+      
+      // you can also manually change the direction anytime after instantiation            
+      gpio4.setDirection("out");
+      gpio4.setDirection("in");
+   }
 });
-
-// bind multiple events
-var processPin4 = function(val) { console.log(val); };
-gpio4.on("valueChange", processPin4);
-
-// unbind a particular callback from the "valueChange" event
-gpio4.off("valueChange", processPin4);
-
-// unbind all callbacks from the "valueChange" event
-gpio4.off("valueChange");
-
-// you can also manually change the direction anytime after instantiation
-var gpio17 = gpio.export(17);
-gpio17.setDirection("in");
-gpio17.setDirection("out");
 ```
 
 ## Example
-##### Flashing Lights (with LED connected to GPIO22)
+##### Cycle voltage every half a second
 ```js
 var gpio = require("gpio");
-var gpio22 = gpio.export(22);
-setInterval(function() {
-   gpio22.set();
-   setTimeout(function() { gpio22.reset(); }, 500);
-}, 1000);
+var gpio22, gpio4, intervalTimer;
+
+// Flashing lights if LED connected to GPIO22
+gpio22 = gpio.export(22, {
+   ready: function() {
+      inervalTimer = setInterval(function() {
+         gpio22.set();
+         setTimeout(function() { gpio22.reset(); }, 500);
+      }, 1000);
+   }
+});
 
 // Lets assume a different LED is hooked up to pin 4, the following code 
 // will make that LED blink inversely with LED from pin 22 
-var gpio4 = gpio.export(4);
-gpio22.on("valueChange", function(val) {
-  gpio4.set(1 - val); // when gpio22 changes value, set gpio4 to the opposite value
+gpio4 = gpio.export(4, {
+   ready: function() {
+      // bind to gpio22's change event
+      gpio22.on("change", function(val) {
+         gpio4.set(1 - val); // set gpio4 to the opposite value
+      });
+   }
 });
+
+// reset the headers and unexport after 10 seconds
+setTimeout(function() {
+   clearInterval(intervalTimer);          // stops the voltage cycling
+   gpio22.removeAllListeners('change');   // unbinds change event
+   gpio22.reset();                        // sets header to low
+   gpio22.unexport();                     // unexport the header
+   
+   gpio4.reset();
+   gpio4.unexport(function() {
+      // unexport takes a callback which gets fired as soon as unexporting is done
+      process.exit(); // exits your node program
+   });
+}, 10000)
 ```
+
 
 ##### Controlling an RC car
 Source code here: https://github.com/EnotionZ/node-rc
