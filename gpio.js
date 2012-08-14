@@ -71,7 +71,7 @@ var GPIO = function(headerNum, opts) {
 	this.export(function() {
 		self.setDirection(dir);
 
-		if(typeof opts.ready === 'function') opts.ready.call(this);
+		if(typeof opts.ready === 'function') opts.ready.call(self);
 
 		// Watch changes to value only for 'in' direction since we manually trigger it
 		// for 'out' direction when we set the value
