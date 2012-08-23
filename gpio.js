@@ -53,6 +53,30 @@ var _export = function(n, fn) {
 	}
 };
 
+// fs.watch doesn't get fired because the file never
+// gets 'accessed' when setting header via hardware
+// manually watching value changes
+var FileWatcher = function(path, interval, fn) {
+	if(typeof fn === 'undefined') {
+		fn = interval;
+		interval = 1;
+	}
+	if(typeof interval !== 'number') return false;
+	if(typeof fn !== 'function') return false;
+
+	var value;
+	var readTimer = setInterval(function() {
+		_read(path, function(val) {
+			if(value !== val) {
+				if(typeof value !== 'undefined') fn(val);
+				value = val;
+			}
+		});
+	}, interval);
+
+	this.stop = function() { clearInterval(readTimer); };
+};
+
 
 var GPIO = function(headerNum, opts) {
 	opts = opts || {};
@@ -75,12 +99,10 @@ var GPIO = function(headerNum, opts) {
 
 		// Watch changes to value only for 'in' direction since we manually trigger it
 		// for 'out' direction when we set the value
-		fs.watchFile(self.PATH.VALUE, function(curr, prev) {
+		self.valueWatcher = new FileWatcher(self.PATH.VALUE, function(val) {
 			if(self.direction === 'in') {
-				self._get(function(val){
-					self.emit("valueChange", val);
-					self.emit("change", val);
-				});
+				self.emit("valueChange", val);
+				self.emit("change", val);
 			}
 		});
 	});
@@ -93,7 +115,7 @@ util.inherits(GPIO, EventEmitter);
  * Export and unexport gpio#, takes callback which fires when operation is completed
  */
 GPIO.prototype.export = function(fn) { _export(this.headerNum, fn); };
-GPIO.prototype.unexport = function(fn) { fs.unwatchFile(this.PATH.VALUE); _unexport(this.headerNum, fn); };
+GPIO.prototype.unexport = function(fn) { this.valueWatcher.stop(); _unexport(this.headerNum, fn); };
 
 
 /**
