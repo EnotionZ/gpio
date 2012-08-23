@@ -1,3 +1,4 @@
+[![build status](https://secure.travis-ci.org/EnotionZ/GpiO.png)](http://travis-ci.org/EnotionZ/GpiO)
 gpio
 ====
 Talk to your Raspberry Pi's GPIO
