@@ -6,6 +6,7 @@ var EventEmitter = require('events').EventEmitter;
 var gpiopath = '/sys/class/gpio/';
 
 var logError = function(e) { if(e) console.log(e.code, e.action, e.path); };
+var logMessage = function(message) { if (exports.logging) console.log(message) };
 
 var _write = function(str, file, fn, override) {
 	if(typeof fn !== "function") fn = logError;
@@ -27,7 +28,7 @@ var _read = function(file, fn) {
 			logError(err);
 		} else {
 			if(typeof fn === "function") fn(data);
-			else util.puts("value: ", data);
+			else logMessage("value: ", data);
 		}
 	});
 }; 
@@ -41,10 +42,10 @@ var _unexport = function(number, fn) {
 var _export = function(n, fn) {
 	if(path.exists(gpiopath + 'gpio'+n)) {
 		// already exported, unexport and export again
-		util.puts('Header already exported');
+		logMessage('Header already exported');
 		_unexport(n, function() { _export(n, fn); });
 	} else {
-		util.puts('Exporting gpio' + n);
+		logMessage('Exporting gpio' + n);
 		_write(n, gpiopath + 'export', function(err) {
 			// if there's an error when exporting, unexport and repeat
 			if(err) _unexport(n, function() { _export(n, fn); });
@@ -126,10 +127,10 @@ GPIO.prototype.setDirection = function(dir) {
 	if(typeof dir !== "string" || dir !== "in") dir = "out";
 	this.direction = dir;
 
-	util.puts('Setting direction "' + dir + '" on gpio' + this.headerNum);
+	logMessage('Setting direction "' + dir + '" on gpio' + this.headerNum);
 	_read(path, function(currDir) {
 		if(dir === currDir) {
-			util.puts('Current direction is already ' + dir);
+			logMessage('Current direction is already ' + dir);
 		} else {
 			_write(dir, path, function() {
 				self.emit('directionChange', dir);
@@ -176,7 +177,7 @@ GPIO.prototype.set = function(v) {
 };
 GPIO.prototype.reset = function() { this.set(0); };
 
-
+exports.logging = false;
 exports.export = function(headerNum, direction) { return new GPIO(headerNum, direction); };
 exports.unexport = _unexport;
 
