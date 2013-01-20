@@ -42,7 +42,7 @@ var _unexport = function(number, fn) {
 var _export = function(n, fn) {
 	if(path.exists(gpiopath + 'gpio'+n)) {
 		// already exported, unexport and export again
-		util.puts('Header already exported');
+		logMessage('Header already exported');
 		_unexport(n, function() { _export(n, fn); });
 	} else {
 		logMessage('Exporting gpio' + n);
