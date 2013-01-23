@@ -6,7 +6,7 @@ var EventEmitter = require('events').EventEmitter;
 var gpiopath = '/sys/class/gpio/';
 
 var logError = function(e) { if(e) console.log(e.code, e.action, e.path); };
-var logMessage = function(message) { if (exports.logging) console.log(message) };
+var logMessage = function() { if (exports.logging) console.log.apply(console, arguments) };
 
 var _write = function(str, file, fn, override) {
 	if(typeof fn !== "function") fn = logError;
