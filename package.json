@@ -7,7 +7,7 @@
 		"url": "http://dph.am"
 	},
 	"keywords": ["gpio", "raspberry", "pi"],
-	"version": "0.2.1",
+	"version": "0.2.2",
 	"main": "./lib/gpio.js",
 	"repository": "git://github.com/EnotionZ/GpiO.git",
 	"licenses": [
