@@ -1,10 +1,20 @@
 {
 	"name": "gpio",
-	"author": "Dominick Pham <dominick@dph.am> (http://dph.am)",
 	"description": "Talk to your Raspberry PI's general purpose inputs and outputs",
+	"author": {
+		"name": "Dominick Pham",
+		"email": "dominick@dph.am",
+		"url": "http://dph.am"
+	},
 	"keywords": ["gpio", "raspberry", "pi"],
 	"version": "0.2.1",
-	"main": "gpio",
-	"repository": "git://github.com/EnotionZ/GpiO.git"
+	"main": "./lib/gpio.js",
+	"repository": "git://github.com/EnotionZ/GpiO.git",
+	"licenses": [
+		{
+			"type": "MIT",
+			"url": "https://raw.github.com/EnotionZ/GpiO/master/LICENSE"
+		}
+	]
 }
 
