@@ -1,12 +1,12 @@
-gpio
-====
-Talk to your Raspberry Pi's GPIO
+# gpio - talk to your Raspberry Pi's gpio headers
 
 * demo using LED: http://www.youtube.com/watch?v=2Juo-CJ6eu4
 * demo using RC car: http://www.youtube.com/watch?v=klQdX8-YVaI
 
 ##Installation
-Get node.js on your Raspberry Pi - https://github.com/gflarity/node_pi
+##### Get node.js on your Raspberry Pi
+On Raspbian, you can simply run `apt-get install nodejs`,
+otherwise, [compile it](https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager)
 
 ## Usage
 
@@ -35,10 +35,16 @@ var gpio4 = gpio.export(4, {
    // function to guarantee everything will get fired properly
    ready: function() {
       gpio4.set();                 // sets pin to high
-      console.log(gpio4.value);    // should log 1
-
       gpio4.set(0);                // sets pin to low (can also call gpio4.reset()
-      console.log(gpio4.value);    // should log 0
+      
+      // Since setting a value happens asynchronously, this method also takes a
+      // callback argument which will get fired after the value is set
+      gpio4.set(function() {
+         console.log(gpio4.value);    // should log 1
+      });
+      gpio4.set(0, function() {
+         console.log(gpio4.value);    // should log 0
+      });
 
       gpio4.unexport();            // all done
    }
@@ -46,9 +52,9 @@ var gpio4 = gpio.export(4, {
 ```
 
 ##### Header direction "in" and event binding
-If you plan to set the header voltage externally, use direction 'in' and read value from your program.
-This library uses node's EventEmitter (http://nodejs.org/api/events.html) which allows you to watch
-for value changes and fire a callback. Event bindings also work when direction is 'out'.
+If you plan to set the header voltage externally, use direction `in` and read value from your program.
+This library uses node's [EventEmitter](http://nodejs.org/api/events.html) which allows you to watch
+for value changes and fire a callback. Event bindings also work when direction is `out`.
 ```js
 var gpio = require("gpio");
 
