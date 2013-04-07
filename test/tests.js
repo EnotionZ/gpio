@@ -1,5 +1,6 @@
 var fs = require('fs');
 var assert = require('assert');
+var sinon = require('sinon');
 var gpio = require('../lib/gpio');
 
 function read(file, fn) {
@@ -15,19 +16,20 @@ function rmws(str) {
 
 describe('GPIO', function() {
 
+	var gpio4;
+
+	before(function(done) {
+		gpio4 = gpio.export(4, {
+			direction: 'out',
+			ready: done
+		});
+	});
+
+	after(function() {
+		gpio4.unexport();
+	});
+
 	describe('Header Direction Out', function() {
-		var gpio4;
-
-		before(function(done) {
-			gpio4 = gpio.export(4, {
-				direction: 'out',
-				ready: done
-			});
-		});
-
-		after(function() {
-			gpio4.unexport();
-		});
 
 		describe('initializing', function() {
 			it('should open specified header', function(done) {
@@ -57,6 +59,75 @@ describe('GPIO', function() {
 						done();
 					});
 				});
+			});
+		});
+
+		describe('#on :change', function() {
+			it('should fire callback when value changes', function(done) {
+				var callback = sinon.spy();
+				gpio4.on('change', callback); 
+
+				// set, then reset
+				gpio4.set(function() { gpio4.reset(); });
+
+				// set and reset is async, wait some time before running assertions
+				setTimeout(function() {
+					assert.ok(callback.calledTwice);
+					done();
+					gpio4.removeListener('change', callback);
+				}, 10);
+			});
+		});
+	});
+
+	// For these tests, make sure header 4 is connected to header 25
+	// header 25 is exported with direction "out" and header 4 is used
+	// to simulate a hardware interrupt
+	describe('Header Direction In', function() {
+
+		var gpio25;
+
+		before(function(done) {
+			gpio25 = gpio.export(25, {
+				direction: 'in',
+				ready: done
+			});
+		});
+		after(function() {
+			gpio25.unexport();
+		});
+
+		describe('#on :change', function() {
+			it('should respond to hardware set', function(done) {
+				var callback = sinon.spy();
+				gpio25.on('change', callback); 
+
+				// wait a little before setting
+				setTimeout(function() { gpio4.set(); }, 500);
+
+				// filewatcher has default interval of 100ms
+				setTimeout(function() {
+					assert.equal(gpio25.value, 1);
+					assert.ok(callback.calledOnce);
+					gpio25.removeListener('change', callback);
+					done();
+				}, 600);
+			});
+
+			it('should respond to hardware reset', function(done) {
+				var callback = sinon.spy();
+				gpio25.on('change', callback); 
+
+				// wait a little before setting
+				setTimeout(function() { gpio4.reset(); }, 500);
+
+				// filewatcher has default interval of 100ms
+				setTimeout(function() {
+					assert.equal(gpio25.value, 0);
+					assert.ok(callback.calledOnce);
+					gpio25.removeListener('change', callback);
+					done();
+				}, 600);
 			});
 		});
 	});
