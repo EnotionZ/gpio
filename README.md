@@ -15,7 +15,9 @@ This library is an npm package, just define "gpio" in your package.json dependen
 npm install gpio
 ```
 
-##### Standard usage
+##### Note: you must be running as root or have the proper priviledges to access the gpio headers
+
+##### Standard setup
 
 ```js
 var gpio = require("gpio");
@@ -34,57 +36,69 @@ var gpio4 = gpio.export(4, {
    // read or write to the header right away. Place your logic in this ready
    // function to guarantee everything will get fired properly
    ready: function() {
-      gpio4.set();                 // sets pin to high
-      gpio4.set(0);                // sets pin to low (can also call gpio4.reset()
-      
-      // Since setting a value happens asynchronously, this method also takes a
-      // callback argument which will get fired after the value is set
-      gpio4.set(function() {
-         console.log(gpio4.value);    // should log 1
-      });
-      gpio4.set(0, function() {
-         console.log(gpio4.value);    // should log 0
-      });
-
-      gpio4.unexport();            // all done
    }
 });
 ```
 
-##### Header direction "in" and event binding
+##### Header direction "in"
 If you plan to set the header voltage externally, use direction `in` and read value from your program.
-This library uses node's [EventEmitter](http://nodejs.org/api/events.html) which allows you to watch
-for value changes and fire a callback. Event bindings also work when direction is `out`.
 ```js
 var gpio = require("gpio");
-
-// creates pin instance with direction "in"
 var gpio4 = gpio.export(4, {
    direction: "in",
    ready: function() {
-
-      // bind to the "change" event
-      // see nodejs's EventEmitter 
-      gpio4.on("change", function(val) {
-         // value will report either 1 or 0 (number) when the value changes
-         console.log(val)
-      });
-      
-      // you can bind multiple events
-      var processPin4 = function(val) { console.log(val); };
-      gpio4.on("change", processPin4);
-            
-      // unbind a particular callback from the "change" event
-      gpio4.removeListener("change", processPin4);
-      
-      // unbind all callbacks from the "change" event
-      gpio4.removeAllListeners("change");
-      
-      // you can also manually change the direction anytime after instantiation            
-      gpio4.setDirection("out");
-      gpio4.setDirection("in");
    }
 });
+```
+
+##### API Methods
+
+```js
+// sets pin to high
+gpio4.set();
+```
+```js
+// sets pin to low (can also call gpio4.reset())
+gpio4.set(0);
+```
+```js
+// Since setting a value happens asynchronously, this method also takes a
+// callback argument which will get fired after the value is set
+gpio4.set(function() {
+   console.log(gpio4.value);    // should log 1
+});
+gpio4.set(0, function() {
+   console.log(gpio4.value);    // should log 0
+});
+```
+```js
+// unexport program when done
+gpio4.unexport();
+```
+
+##### EventEmitter
+This library uses node's [EventEmitter](http://nodejs.org/api/events.html) which allows you to watch
+for value changes and fire a callback.
+```js
+// bind to the "change" event
+gpio4.on("change", function(val) {
+   // value will report either 1 or 0 (number) when the value changes
+   console.log(val)
+});
+      
+// you can bind multiple events
+var processPin4 = function(val) { console.log(val); };
+gpio4.on("change", processPin4);
+            
+// unbind a particular callback from the "change" event
+gpio4.removeListener("change", processPin4);
+      
+// unbind all callbacks from the "change" event
+gpio4.removeAllListeners("change");
+      
+// you can also manually change the direction anytime after instantiation            
+gpio4.setDirection("out");
+gpio4.setDirection("in");
 ```
 
 ## Example
