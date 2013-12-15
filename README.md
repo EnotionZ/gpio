@@ -110,7 +110,7 @@ var gpio22, gpio4, intervalTimer;
 // Flashing lights if LED connected to GPIO22
 gpio22 = gpio.export(22, {
    ready: function() {
-      inervalTimer = setInterval(function() {
+      intervalTimer = setInterval(function() {
          gpio22.set();
          setTimeout(function() { gpio22.reset(); }, 500);
       }, 1000);
