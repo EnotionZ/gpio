@@ -3,6 +3,12 @@
 * demo using LED: http://www.youtube.com/watch?v=2Juo-CJ6eu4
 * demo using RC car: http://www.youtube.com/watch?v=klQdX8-YVaI
 
+
+## Important note
+I haven't maintained this project for a while now, and it's unlikely I will provide any updates going forward given other more mature gpio libraries out there. If you're looking for a reliable way to communicate with the raspberry pi in JavaScript, check out the [wiring-pi JavaScript library](https://www.npmjs.com/package/wiring-pi). It provides direct bindings to the fully-featured [Wiring Pi C library](http://wiringpi.com/).
+
+---
+
 ##Installation
 ##### Get node.js on your Raspberry Pi
 On Raspbian, you can simply run `apt-get install nodejs`,
