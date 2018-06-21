@@ -1,23 +1,28 @@
 {
-	"name": "gpio",
-	"version": "0.2.7",
-	"author": {
-		"name": "Dominick Pham",
-		"email": "dominick@dph.am",
-		"url": "http://dph.am"
-	},
-	"description": "Talk to your Raspberry PI's general purpose inputs and outputs",
-	"keywords": ["gpio", "raspberry", "pi"],
-	"main": "./lib/gpio.js",
-	"repository": "git://github.com/EnotionZ/GpiO.git",
-	"devDependencies": {
-		"sinon": "*"
-	},
-	"licenses": [
-		{
-			"type": "MIT",
-			"url": "https://raw.github.com/EnotionZ/GpiO/master/LICENSE"
-		}
-	]
+  "name": "gpio",
+  "version": "0.3.0",
+  "author": {
+    "name": "Sebastian Alkemade",
+    "email": "sa@linetco.com"
+  },
+  "description": "Talk to your Raspberry PI's general purpose inputs and outputs",
+  "keywords": [
+    "gpio",
+    "raspberry",
+    "pi"
+  ],
+  "main": "./lib/gpio.js",
+  "repository": "git://github.com/sa-linetco/GpiO.git",
+  "devDependencies": {
+    "assert": "^1.4.1",
+    "fs-extra": "^2.0.0",
+    "mocha": "^5.2.0",
+    "sinon": "^6.0.0"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://raw.github.com/sa-linetco/GpiO/master/LICENSE"
+    }
+  ]
 }
-
