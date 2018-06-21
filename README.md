@@ -42,7 +42,11 @@ var gpio4 = gpio.export(4, {
    // read or write to the header right away. Place your logic in this ready
    // function to guarantee everything will get fired properly
    ready: function() {
-   }
+   },
+   
+   // To be able to test gpio-dependent code, you can set the gpio base path.
+   // This way you can modify the gpio value in your test code.
+   gpioBasePath: '/sys/class/gpio/'
 });
 ```
 
