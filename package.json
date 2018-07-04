@@ -6,8 +6,16 @@
 		"email": "dominick@dph.am",
 		"url": "http://dph.am"
 	},
-	"description": "Talk to your Raspberry PI's general purpose inputs and outputs",
-	"keywords": ["gpio", "raspberry", "pi"],
+	"description": "Talk to your Single Board Computer's general purpose inputs and outputs",
+	"keywords": [
+		"artik",
+		"gpio",
+		"pi",
+		"raspberry",
+		"rpi",
+		"sbc",
+		"sysfs"
+	],
 	"main": "./lib/gpio.js",
 	"scripts": {
 		"start": "NODE_PATH=lib/ node example"
@@ -23,4 +31,3 @@
 		}
 	]
 }
-
