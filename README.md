@@ -9,7 +9,7 @@ I haven't maintained this project for a while now, and it's unlikely I will prov
 
 ---
 
-##Installation
+## Installation
 ##### Get node.js on your Raspberry Pi
 On Raspbian, you can simply run `apt-get install nodejs`,
 otherwise, [compile it](https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager)
