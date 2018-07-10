@@ -1,3 +1,17 @@
+# !!! THIS is FORK !!!
+# Very small change done to support Cubieboard's GPIO instead of Pi.
+
+
+
+
+
+
+
+
+
+
+
+
 # gpio - talk to your Raspberry Pi's gpio headers
 
 * demo using LED: http://www.youtube.com/watch?v=2Juo-CJ6eu4
