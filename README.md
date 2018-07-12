@@ -1,18 +1,33 @@
-# gpio - talk to your Raspberry Pi's gpio headers
-
-* demo using LED: http://www.youtube.com/watch?v=2Juo-CJ6eu4
-* demo using RC car: http://www.youtube.com/watch?v=klQdX8-YVaI
+# gpio - talk to your Single Board Computer's gpio headers
 
 
-## Important note
-I haven't maintained this project for a while now, and it's unlikely I will provide any updates going forward given other more mature gpio libraries out there. If you're looking for a reliable way to communicate with the raspberry pi in JavaScript, check out the [wiring-pi JavaScript library](https://www.npmjs.com/package/wiring-pi). It provides direct bindings to the fully-featured [Wiring Pi C library](http://wiringpi.com/).
+## Introduction
 
----
+This plain JavaScript module is generic and only rely on system's *sysfs*.
+
+Please consider other (more mature) gpio libraries out there which support better your hardware,
+
+For instance, of you're looking for a reliable way to communicate with the Raspberry Pi using JavaScript,
+check out the [wiring-pi JavaScript library](https://www.npmjs.com/package/wiring-pi).
+It provides direct bindings to the fully-featured [Wiring Pi C library](http://wiringpi.com/).
+
+But if you want/need a generic lightweight module, this one can be used as fallback.
+
+## Support
+
+Following hardware was reported to work (with some limitations or workarounds)
+
+* ARTIK10 (inputs' pull down resistors are enabled by default)
+* Raspberry Pi (use wiringpi's /usr/bin/gpio to change mode: gpio -g mode 11 up)
+
 
 ## Installation
-##### Get node.js on your Raspberry Pi
-On Raspbian, you can simply run `apt-get install nodejs`,
-otherwise, [compile it](https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager)
+
+Get node.js for your SBC,
+If using Debian or deviates (Raspbian for RPi), you can simply run:
+    sudo apt-get install nodejs
+
+otherwise, install from node or [compile it](https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager)
 
 ## Usage
 
@@ -21,9 +36,9 @@ This library is an npm package, just define "gpio" in your package.json dependen
 npm install gpio
 ```
 
-##### Note: you must be running as root or have the proper priviledges to access the gpio headers
+Note: you must be have proper privileges to access the GPIO headers (or run node as root).
 
-##### Standard setup
+### Standard setup
 
 ```js
 var gpio = require("gpio");
@@ -46,7 +61,8 @@ var gpio4 = gpio.export(4, {
 });
 ```
 
-##### Header direction "in"
+### Header direction "in"
+
 If you plan to set the header voltage externally, use direction `in` and read value from your program.
 ```js
 var gpio = require("gpio");
@@ -57,7 +73,7 @@ var gpio4 = gpio.export(4, {
 });
 ```
 
-##### API Methods
+## API Methods
 
 ```js
 // sets pin to high
@@ -82,7 +98,8 @@ gpio4.set(0, function() {
 gpio4.unexport();
 ```
 
-##### EventEmitter
+### EventEmitter
+
 This library uses node's [EventEmitter](http://nodejs.org/api/events.html) which allows you to watch
 for value changes and fire a callback.
 ```js
@@ -108,7 +125,9 @@ gpio4.setDirection("in");
 ```
 
 ## Example
-##### Cycle voltage every half a second
+
+### Cycle voltage every half a second
+
 ```js
 var gpio = require("gpio");
 var gpio22, gpio4, intervalTimer;
@@ -149,7 +168,10 @@ setTimeout(function() {
 }, 10000)
 ```
 
+## References
 
-##### Controlling an RC car
-Source code here: https://github.com/EnotionZ/node-rc
+Demos on Raspberry Pi:
 
+* Demo using LED: http://www.youtube.com/watch?v=2Juo-CJ6eu4
+* Demo using RC car: http://www.youtube.com/watch?v=klQdX8-YVaI
+* Source code here: https://github.com/EnotionZ/node-rc
