@@ -29,27 +29,26 @@ var DEFAULT_OUTPUT_PIN = 28;
 var main = function(config)
 {
   var self = this;
-  self.config = config ? config : {};
-  if (typeof(self.config.pin) === "undefined")
-    self.config.pin = DEFAULT_OUTPUT_PIN;
-  if (typeof(self.config.frequency) === "undefined")
-    self.config.frequency = 1;
+  self.config = config || {
+    pin: DEFAULT_OUTPUT_PIN
+  }
+  self.config.direction || (self.config.direction = gpio.DIRECTION.OUT);
+  console.log("log: pin" + self.config.pin + ": opening: direction: " + self.config.direction);
   self.port = gpio.export(self.config.pin, {
-    direction: "out",
+    direction: self.config.direction,
     ready: function() {
-      console.log("log: pin" + self.config.pin  + ": ready:");
-      self.interval = setInterval(function() {
+      console.log("log: pin" + self.config.pin + ": ready:");
+      var intervalTimer = setInterval(function() {
         self.value = !self.value;
         self.port.set(self.value);
         console.log("log: pin" + self.config.pin + ": change: " + self.value);
-      }, 1000. / self.config.frequency);
+      }, 1000);
     }});
 }
 
 module.exports = main;
-module.exports.DEFAULT_PIN = DEFAULT_OUTPUT_PIN;
 
 if (!module.parent) {
   var pin = process.argv[2] ? Number(process.argv[2]) : DEFAULT_OUTPUT_PIN;
-  main({pin: pin});
+  main({pin: pin });
 }

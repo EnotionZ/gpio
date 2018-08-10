@@ -29,25 +29,25 @@ var DEFAULT_INPUT_PIN = 30;
 var main = function(config)
 {
   var self = this;
-  self.config = config ? config : {};
-  if (typeof(self.config.pin) === "undefined")
-    self.config.pin = DEFAULT_INPUT_PIN;
-  console.log("log: pin" + self.config.pin + ": opening: direction: IN");
+  self.config = config || {
+    pin: DEFAULT_INPUT_PIN
+  }
+  self.config.direction || (self.config.direction = gpio.DIRECTION.IN);
+  console.log("log: pin" + self.config.pin + ": opening: direction: " + self.config.direction);
   self.port = gpio.export(self.config.pin, {
-    direction: "in",
+    direction: self.config.direction,
     ready: function() {
-      console.log("log: pin" + this.headerNum + ": ready:");
+      console.log("log: pin" + self.config.pin + ": ready:");
       this.on("change", function(val) {
-        console.log("log: pin" + this.headerNum + ": change: " + Boolean(val));
+        console.log("log: pin" + self.config.pin + ": change: " + val);
       });
     }
   });
 }
 
 module.exports = main;
-module.exports.DEFAULT_PIN = DEFAULT_INPUT_PIN;
 
-if (require.main === module) {
+if (!module.parent) {
   var pin = process.argv[2] ? Number(process.argv[2]) : DEFAULT_INPUT_PIN;
   main({pin: pin});
 }
