@@ -1,5 +1,7 @@
 # gpio - talk to your Single Board Computer's gpio headers
 
+[![NPM](https://nodei.co/npm/gpio.png)](https://npmjs.org/package/gpio)
+
 
 ## Introduction
 
