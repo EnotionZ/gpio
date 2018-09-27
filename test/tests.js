@@ -20,7 +20,7 @@ describe('GPIO', function() {
 
 	before(function(done) {
 		gpio4 = gpio.export(4, {
-			direction: 'out',
+			direction: gpio.DIRECTION.OUT,
 			ready: done
 		});
 	});
@@ -34,7 +34,7 @@ describe('GPIO', function() {
 		describe('initializing', function() {
 			it('should open specified header', function(done) {
 				read('/sys/class/gpio/gpio4/direction', function(val) {
-					assert.equal(rmws(val), 'out');
+					assert.equal(rmws(val), gpio.DIRECTION.OUT);
 					done();
 				});
 			});
@@ -81,7 +81,7 @@ describe('GPIO', function() {
 	});
 
 	// For these tests, make sure header 4 is connected to header 25
-	// header 25 is exported with direction "out" and header 4 is used
+	// header 25 is exported with direction OUT and header 4 is used
 	// to simulate a hardware interrupt
 	describe('Header Direction In', function() {
 
@@ -89,7 +89,7 @@ describe('GPIO', function() {
 
 		before(function(done) {
 			gpio25 = gpio.export(25, {
-				direction: 'in',
+				direction: gpio.DIRECTION.IN,
 				ready: done
 			});
 		});

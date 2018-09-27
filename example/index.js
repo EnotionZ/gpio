@@ -26,10 +26,10 @@ function main()
   console.log("log: make sure to have access to /sys/class/gpio/");
   var input = require('./input');
   var output = require('./output');
-  console.log('log: Using default input pin=' + input.DEFAULT_PIN);
-  console.log('log: Using default output pin=' + output.DEFAULT_PIN);
-  input();
-  output();
+  var inconfig = process.argv[2] ? { 'pin': Number(process.argv[2]) } : null;
+  var outconfig = process.argv[3] ? { 'pin' : Number(process.argv[3]) } : null;
+  new input(inconfig);
+  new output(outconfig);
 }
 
 module.exports = main;
