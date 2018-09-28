@@ -34,7 +34,7 @@ var main = function(config)
   }
   self.config.direction || (self.config.direction = gpio.DIRECTION.OUT);
   console.log("log: pin" + self.config.pin + ": opening: direction: " + self.config.direction);
-  self.port = gpio.export(self.config.pin, {
+  self.port = gpio.open(self.config.pin, {
     direction: self.config.direction,
     ready: function() {
       console.log("log: pin" + self.config.pin + ": ready:");
