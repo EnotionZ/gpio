@@ -27,8 +27,7 @@ Following hardware was reported to work (with some limitations or workarounds)
 ## Usage
 
 Get node.js for your SBC.
-If using Debian or deviates (Raspbian for RPi), you can simply run:
-    `sudo apt-get install nodejs`.
+If using Debian or deviates (Raspbian for RPi), you can simply run `sudo apt-get install nodejs`.
 
 Define _gpio_ in your _package.json_ dependencies or run `npm install gpio` and
 ensure you have proper privileges to access the GPIO pins.
@@ -48,10 +47,6 @@ var gpio4 = gpio.open({
     // the pin value to either LOW or HIGH (3.3V) from your program.
     direction: gpio.DIRECTION.OUT,
 
-    // set the time interval (ms) between each read when watching for value changes
-    // note: this is default to 100, setting value too low will cause high CPU usage
-    interval: 100,
-
 }, function(err, gpioPin) {
     // Due to the asynchronous nature of opening pin, place code in this callback
     // Check for error before proceeding
@@ -69,7 +64,15 @@ If you plan to set the pin value via hardware, use `gpio.DIRECTION.IN` and read 
 ```js
 gpio.open({
     pin: 4,
-    direction: gpio.DIRECTION.IN
+
+    // set input direction
+    direction: gpio.DIRECTION.IN,
+
+    // set the time interval (ms) between each read when watching for value changes
+    // this is only applicable in input mode and defaults to 100ms
+    // warning: setting value too low will cause high CPU usage
+    interval: 100
+
 }, function(err, gpioPin) {
     if(err) return console.log(err);
 
