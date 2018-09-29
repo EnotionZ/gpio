@@ -214,9 +214,6 @@ Remember to close and cleanup your program when done
 ```js
 setTimeout(function() {
     gpio22.removeAllListeners('change');   // unbinds change event
-    gpio22.reset();                        // sets pin to low
-    gpio4.reset();
-
     gpio22.close();                        // close the pin
     gpio4.close(function() {
         // this method takes a callback which fires as soon as closing is done
