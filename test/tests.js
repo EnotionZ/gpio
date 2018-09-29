@@ -4,10 +4,10 @@ var assert = require('assert');
 var sinon = require('sinon');
 var gpio = require('../lib/gpio');
 
-var PIN_A = 4;
-var PIN_B = 17;
+var PIN_OUT = 4;
+var PIN_IN = 17;
 
-var pathA = '/sys/class/gpio/gpio' + PIN_A + '/';
+var pathA = '/sys/class/gpio/gpio' + PIN_OUT + '/';
 var gpioA, gpioB;
 
 function read(file, fn) {
@@ -25,7 +25,7 @@ describe('GPIO', function() {
 
   before(function(done) {
     gpioA = gpio.open({
-      pin: PIN_A,
+      pin: PIN_OUT,
       direction: gpio.DIRECTION.OUT
     }, function(err, self) {
       done();
@@ -94,7 +94,7 @@ describe('GPIO', function() {
 
     before(function(done) {
       gpioB = gpio.open({
-        pin: PIN_B,
+        pin: PIN_IN,
         direction: gpio.DIRECTION.IN
       }, function(err, self) {
         done();
