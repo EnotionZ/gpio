@@ -18,6 +18,7 @@
   ],
   "main": "./lib/gpio.js",
   "scripts": {
+    "start": "NODE_PATH=lib/ node example",
     "test": "./node_modules/mocha/bin/mocha --timeout 15000"
   },
   "repository": "git://github.com/EnotionZ/gpio.git",
