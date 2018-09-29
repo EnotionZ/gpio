@@ -34,14 +34,13 @@ var main = function(config)
   }
   self.config.direction || (self.config.direction = gpio.DIRECTION.IN);
   console.log("log: pin" + self.config.pin + ": opening: direction: " + self.config.direction);
-  self.port = gpio.open(self.config.pin, {
-    direction: self.config.direction,
-    ready: function() {
-      console.log("log: pin" + self.config.pin + ": ready:");
-      this.on("change", function(val) {
-        console.log("log: pin" + self.config.pin + ": change: " + val);
-      });
-    }
+  self.port = gpio.open(self.config, function(err, gpioPin) {
+    if(err) return console.log(err);
+
+    console.log("log: pin" + self.config.pin + ": ready:");
+    this.on("change", function(val) {
+      console.log("log: pin" + gpioPin.pin + ": change: " + val);
+    });
   });
 }
 
