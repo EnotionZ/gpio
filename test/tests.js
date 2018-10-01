@@ -4,6 +4,9 @@ var assert = require('assert');
 var sinon = require('sinon');
 var gpio = require('../lib/gpio');
 
+// connect this pin to 3V3 to test for HIGH input
+var PIN_HIGH = 22;
+
 var PIN_OUT = 4;
 var PIN_IN = 17;
 
@@ -104,6 +107,29 @@ describe('GPIO', function() {
     after(function() {
       gpioB.close();
     });
+
+    describe('Report correct initial pin value', function() {
+      it('should report correct LOW pin', function(done) {
+        gpio.open({
+          pin: PIN_IN,
+          direction: gpio.DIRECTION.IN
+        }, function(err, pin) {
+          assert.equal(pin.value, gpio.LOW);
+          done();
+        });
+      });
+
+      it('should report correct HIGH pin', function(done) {
+        gpio.open({
+          pin: PIN_HIGH,
+          direction: gpio.DIRECTION.IN
+        }, function(err, pin) {
+          assert.equal(pin.value, gpio.HIGH);
+          done();
+        });
+      });
+    });
+
 
     describe('#on :change', function() {
       it('should respond to hardware set', function(done) {
