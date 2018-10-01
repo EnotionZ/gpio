@@ -57,6 +57,20 @@ var gpio4 = gpio.open({
 });
 ```
 
+### Initialize pin HIGH
+
+To set the output pin with a default HIGH value, set the direction to _gpio.DIRECTION.HIGH_.
+
+```js
+gpio.open({
+    pin: 4,
+    direction: gpio.DIRECTION.HIGH,
+}, function(err, gpioPin) {
+    if(err) return;
+    // gpioPin.value === gpio.HIGH;
+});
+```
+
 ### Open GPIO pin to read input
 
 If you plan to set the pin value via hardware, use `gpio.DIRECTION.IN` and read value from your program.
@@ -74,7 +88,7 @@ gpio.open({
     interval: 100
 
 }, function(err, gpioPin) {
-    if(err) return console.log(err);
+    if(err) return;
 
     // read pin value
     console.log(gpioPin.value);
