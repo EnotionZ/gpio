@@ -7,11 +7,22 @@
 		"url": "http://dph.am"
 	},
 	"description": "Talk to your Raspberry PI's general purpose inputs and outputs",
-	"keywords": ["gpio", "raspberry", "pi"],
+	"keywords": [
+		"gpio",
+		"raspberry",
+		"pi"
+	],
 	"main": "./lib/gpio.js",
 	"repository": "git://github.com/EnotionZ/GpiO.git",
 	"devDependencies": {
-		"sinon": "*"
+		"chai": "^4.2.0",
+		"mkdirp": "^0.5.1",
+		"mocha": "^6.2.1",
+		"rimraf": "^3.0.0",
+		"sinon": "^7.5.0"
+	},
+	"scripts": {
+		"test": "mocha ./test/**/*.spec.js"
 	},
 	"licenses": [
 		{
@@ -20,4 +31,3 @@
 		}
 	]
 }
-
