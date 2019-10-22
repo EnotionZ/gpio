@@ -1,5 +1,7 @@
 # gpio - talk to your Single Board Computer's gpio headers
 
+[![NPM](https://nodei.co/npm/gpio.png)](https://npmjs.org/package/gpio)
+
 
 ## Introduction
 
@@ -47,7 +49,7 @@ var gpio = require("gpio");
 var gpio4 = gpio.export(4, {
    // When you export a pin, the default direction is out. This allows you to set
    // the pin value to either LOW or HIGH (3.3V) from your program.
-   direction: 'out',
+   direction: gpio.DIRECTION.OUT,
 
    // set the time interval (ms) between each read when watching for value changes
    // note: this is default to 100, setting value too low will cause high CPU usage
@@ -61,13 +63,13 @@ var gpio4 = gpio.export(4, {
 });
 ```
 
-### Header direction "in"
+### Header direction IN
 
 If you plan to set the header voltage externally, use direction `in` and read value from your program.
 ```js
 var gpio = require("gpio");
 var gpio4 = gpio.export(4, {
-   direction: "in",
+   direction: gpio.DIRECTION.IN,
    ready: function() {
    }
 });
@@ -120,8 +122,8 @@ gpio4.removeListener("change", processPin4);
 gpio4.removeAllListeners("change");
       
 // you can also manually change the direction anytime after instantiation            
-gpio4.setDirection("out");
-gpio4.setDirection("in");
+gpio4.setDirection(gpio.DIRECTION.OUT);
+gpio4.setDirection(gpio.DIRECTION.IN);
 ```
 
 ## Example

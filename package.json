@@ -1,18 +1,25 @@
 {
 	"name": "gpio",
-	"version": "0.2.8",
+	"version": "0.2.10",
 	"author": {
 		"name": "Dominick Pham",
 		"email": "dominick@dph.am",
 		"url": "http://dph.am"
 	},
-	"description": "Talk to your Raspberry PI's general purpose inputs and outputs",
+	"description": "Talk to your Single Board Computer's general purpose inputs and outputs",
 	"keywords": [
+		"artik",
 		"gpio",
+		"pi",
 		"raspberry",
-		"pi"
+		"rpi",
+		"sbc",
+		"sysfs"
 	],
 	"main": "./lib/gpio.js",
+	"scripts": {
+		"start": "NODE_PATH=lib/ node example"
+	},
 	"repository": "git://github.com/EnotionZ/GpiO.git",
 	"devDependencies": {
 		"chai": "^4.2.0",
